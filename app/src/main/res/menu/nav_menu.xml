@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/group_settings">
+        <item
+            android:id="@+id/nav_mood_history"
+            android:icon="@android:drawable/ic_menu_recent_history"
+            android:title="📊 История настроений"
+            android:iconTint="#FFFFFF" />
+        
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="Настройки"
+            android:iconTint="#FFFFFF" />
+        
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@android:drawable/ic_menu_share"
+            android:title="Поделиться погодой"
+            android:iconTint="#FFFFFF" />
+        
+        <item
+            android:id="@+id/nav_rate"
+            android:icon="@android:drawable/btn_star"
+            android:title="Оцени приложение"
+            android:iconTint="#FFFFFF" />
+    </group>
+
+</menu>
+

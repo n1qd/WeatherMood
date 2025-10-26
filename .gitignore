@@ -1,0 +1,20 @@
+*.iml
+.gradle
+/local.properties
+/.idea/
+.DS_Store
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Конфиденциальные данные (содержат API ключи)
+google-services.json
+app/google-services.json
+
+# Тестовые файлы (не используются)
+/app/src/test/
+/app/src/androidTest/
+/app/sampledata/

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">WeatherMood</string>
+    <string name="splash_loading">Загрузка...</string>
+    <string name="auth_continue_anonymous">Продолжить анонимно</string>
+    <string name="city_picker_hint">Название города</string>
+    <string name="profile_title">Профиль</string>
+    <string name="profile_sync_enabled">Синхронизация включена</string>
+    <string name="profile_export_data">Экспорт данных</string>
+    <string name="profile_clear_history">Очистить историю</string>
+    <string name="profile_delete_account">Удалить аккаунт</string>
+    <string name="mood_history_title">История настроения</string>
+</resources>
