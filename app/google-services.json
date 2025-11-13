@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "380382596931",
+    "project_id": "mobileweather-bf481",
+    "storage_bucket": "mobileweather-bf481.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380382596931:android:d272d9e94d35b151cce9f6",
+        "android_client_info": {
+          "package_name": "com.example.mobileweather"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfsR3Nm69_GAns1d254apheiFzsAq7Xlo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380382596931:android:3750cd42b7fa703fcce9f6",
+        "android_client_info": {
+          "package_name": "com.weatherapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfsR3Nm69_GAns1d254apheiFzsAq7Xlo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
