@@ -8,11 +8,14 @@ import com.example.weathermood.data.db.MoodRatingEntity
 import com.example.weathermood.sync.SyncManager
 import com.example.weathermood.auth.UserManager
 import com.example.weathermood.data.CityManager
-
+import com.example.weathermood.utils.LocationHelper
+import com.example.weathermood.utils.LocationData
 
 import android.os.Bundle
 import android.content.Intent
 import android.content.Context
+import android.content.pm.PackageManager
+import android.Manifest
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
@@ -29,6 +32,8 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout    
@@ -53,11 +58,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var userManager: UserManager
     private lateinit var cityManager: CityManager
+    private lateinit var locationHelper: LocationHelper
     private val TAG = "WeatherApp"
     private var isLoading = false
     private var currentWeather: WeatherResponse? = null
     private var useFahrenheit = false
     private var useMph = false
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,10 +74,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         syncManager = SyncManager(this)
         userManager = UserManager(this)
         cityManager = CityManager(this)
+        locationHelper = LocationHelper(this)
         
         // Загружаем настройки
         useFahrenheit = Prefs.getUseFahrenheit(this)
         useMph = Prefs.getUseMph(this)
+        
+        // Запрашиваем разрешения на местоположение, если их нет
+        requestLocationPermissionIfNeeded()
         
         // Настройка бокового меню
         drawerLayout = findViewById(R.id.drawer_layout)
@@ -101,6 +112,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val headerView = navView.getHeaderView(0)
                 val citiesContainer = headerView.findViewById<LinearLayout>(R.id.citiesContainer)
                 citiesContainer.removeAllViews()
+                
+                // Добавляем кнопку "Текущее положение"
+                val currentLocationView = LayoutInflater.from(this@MainActivity)
+                    .inflate(R.layout.nav_city_item, citiesContainer, false)
+                val tvCurrentLocation = currentLocationView.findViewById<TextView>(R.id.tvCityName)
+                val btnDeleteCurrent = currentLocationView.findViewById<ImageButton>(R.id.btnDeleteCity)
+                
+                val useCurrentLocation = Prefs.getUseCurrentLocation(this@MainActivity)
+                tvCurrentLocation.text = "📍 Текущее положение"
+                if (useCurrentLocation) {
+                    // Выделяем активную кнопку
+                    tvCurrentLocation.setTextColor(0xFFFFD700.toInt()) // Золотой цвет
+                    tvCurrentLocation.setTypeface(null, android.graphics.Typeface.BOLD)
+                } else {
+                    tvCurrentLocation.setTextColor(getColor(android.R.color.white))
+                    tvCurrentLocation.setTypeface(null, android.graphics.Typeface.NORMAL)
+                }
+                btnDeleteCurrent.visibility = View.GONE // Скрываем кнопку удаления
+                
+                currentLocationView.setOnClickListener {
+                    Prefs.setUseCurrentLocation(this@MainActivity, true)
+                    loadWeatherData()
+                    Toast.makeText(this@MainActivity, "Используется текущее местоположение", Toast.LENGTH_SHORT).show()
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    // Обновляем меню, чтобы показать выделение
+                    loadUserCitiesIntoMenu(navView)
+                }
+                citiesContainer.addView(currentLocationView)
                 
                 // Добавляем кнопку "Добавить город"
                 val addCityView = LayoutInflater.from(this@MainActivity)
@@ -137,12 +176,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         val icon = if (city.isDefault) "⭐" else "📍"
                         tvCityName.text = "$icon $displayName"
                         
+                        // Выделяем выбранный город, если не используется текущее местоположение
+                        val useCurrentLocation = Prefs.getUseCurrentLocation(this@MainActivity)
+                        val selectedCity = Prefs.getSelectedCity(this@MainActivity)
+                        if (!useCurrentLocation && displayName == selectedCity) {
+                            tvCityName.setTextColor(0xFFFFD700.toInt()) // Золотой цвет
+                            tvCityName.setTypeface(null, android.graphics.Typeface.BOLD)
+                        } else {
+                            tvCityName.setTextColor(getColor(android.R.color.white))
+                            tvCityName.setTypeface(null, android.graphics.Typeface.NORMAL)
+                        }
+                        
                         // Клик на название города - выбор города
                         cityView.setOnClickListener {
+                            Prefs.setUseCurrentLocation(this@MainActivity, false)
                             Prefs.setSelectedCity(this@MainActivity, displayName)
                             loadWeatherData()
                             Toast.makeText(this@MainActivity, "Выбран город: $displayName", Toast.LENGTH_SHORT).show()
                             drawerLayout.closeDrawer(GravityCompat.START)
+                            // Обновляем меню, чтобы показать выделение
+                            loadUserCitiesIntoMenu(navView)
                         }
                         
                         // Клик на кнопку удаления
@@ -156,6 +209,39 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 
             } catch (e: Exception) {
                 Log.e(TAG, "Ошибка загрузки городов: ${e.message}", e)
+            }
+        }
+    }
+    
+    private fun requestLocationPermissionIfNeeded() {
+        if (!locationHelper.hasLocationPermission()) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+    
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Разрешение получено, загружаем погоду по текущему местоположению
+                if (Prefs.getUseCurrentLocation(this)) {
+                    loadWeatherData()
+                }
+            } else {
+                // Разрешение отклонено, используем дефолтный город
+                Prefs.setUseCurrentLocation(this, false)
+                Toast.makeText(this, "Разрешение на местоположение отклонено. Используется дефолтный город.", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -356,16 +442,46 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         isLoading = true
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val selectedCity = Prefs.getSelectedCity(this@MainActivity, Constants.DEFAULT_CITY)
-                Log.d(TAG, "1. Вызываем API для города: $selectedCity")
-                Log.d(TAG, "   API Key: ${Constants.API_KEY.take(8)}...")
-
-                val httpResponse = kotlinx.coroutines.withTimeout(30000) { // Увеличен таймаут до 30 секунд
-                    ApiClient.weatherApi.getWeather(
-                        city = selectedCity,
-                    apiKey = Constants.API_KEY
-                    )
+                val useCurrentLocation = Prefs.getUseCurrentLocation(this@MainActivity)
+                val httpResponse: retrofit2.Response<WeatherResponse>
+                
+                if (useCurrentLocation && locationHelper.hasLocationPermission()) {
+                    // Получаем погоду по текущему местоположению
+                    Log.d(TAG, "1. Получаем текущее местоположение...")
+                    val locationData = locationHelper.getCurrentLocationOnce()
+                    
+                    if (locationData != null) {
+                        Log.d(TAG, "   Координаты: lat=${locationData.latitude}, lon=${locationData.longitude}")
+                        httpResponse = kotlinx.coroutines.withTimeout(30000) {
+                            ApiClient.weatherApi.getWeatherByCoordinates(
+                                lat = locationData.latitude,
+                                lon = locationData.longitude,
+                                apiKey = Constants.API_KEY
+                            )
+                        }
+                    } else {
+                        Log.w(TAG, "   Не удалось получить местоположение, используем дефолтный город")
+                        val selectedCity = Prefs.getSelectedCity(this@MainActivity, Constants.DEFAULT_CITY)
+                        httpResponse = kotlinx.coroutines.withTimeout(30000) {
+                            ApiClient.weatherApi.getWeather(
+                                city = selectedCity,
+                                apiKey = Constants.API_KEY
+                            )
+                        }
+                    }
+                } else {
+                    // Используем выбранный город
+                    val selectedCity = Prefs.getSelectedCity(this@MainActivity, Constants.DEFAULT_CITY)
+                    Log.d(TAG, "1. Вызываем API для города: $selectedCity")
+                    httpResponse = kotlinx.coroutines.withTimeout(30000) {
+                        ApiClient.weatherApi.getWeather(
+                            city = selectedCity,
+                            apiKey = Constants.API_KEY
+                        )
+                    }
                 }
+                
+                Log.d(TAG, "   API Key: ${Constants.API_KEY.take(8)}...")
 
                 Log.d(TAG, "HTTP code getWeather: ${'$'}{httpResponse.code()} success=${'$'}{httpResponse.isSuccessful}")
                 if (!httpResponse.isSuccessful) {
@@ -743,12 +859,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val selectedCity = Prefs.getSelectedCity(this@MainActivity)
-                val httpResponse = kotlinx.coroutines.withTimeout(10000) {
-                    weatherApi.getHourlyForecast(
-                    city = selectedCity,
-                    apiKey = Constants.API_KEY
-                    )
+                val useCurrentLocation = Prefs.getUseCurrentLocation(this@MainActivity)
+                val httpResponse: retrofit2.Response<com.example.weathermood.data.ForecastResponse>
+                
+                if (useCurrentLocation && locationHelper.hasLocationPermission()) {
+                    val locationData = locationHelper.getCurrentLocationOnce()
+                    if (locationData != null) {
+                        httpResponse = kotlinx.coroutines.withTimeout(10000) {
+                            weatherApi.getHourlyForecastByCoordinates(
+                                lat = locationData.latitude,
+                                lon = locationData.longitude,
+                                apiKey = Constants.API_KEY
+                            )
+                        }
+                    } else {
+                        val selectedCity = Prefs.getSelectedCity(this@MainActivity)
+                        httpResponse = kotlinx.coroutines.withTimeout(10000) {
+                            weatherApi.getHourlyForecast(
+                                city = selectedCity,
+                                apiKey = Constants.API_KEY
+                            )
+                        }
+                    }
+                } else {
+                    val selectedCity = Prefs.getSelectedCity(this@MainActivity)
+                    httpResponse = kotlinx.coroutines.withTimeout(10000) {
+                        weatherApi.getHourlyForecast(
+                            city = selectedCity,
+                            apiKey = Constants.API_KEY
+                        )
+                    }
                 }
                 Log.d(TAG, "HTTP code forecast: ${'$'}{httpResponse.code()} success=${'$'}{httpResponse.isSuccessful}")
                 if (!httpResponse.isSuccessful) {

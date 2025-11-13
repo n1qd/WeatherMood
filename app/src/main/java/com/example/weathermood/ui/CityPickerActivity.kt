@@ -80,6 +80,7 @@ class CityPickerActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     cityManager.addFavoriteCity(city)
+                    Prefs.setUseCurrentLocation(this@CityPickerActivity, false)
                     Prefs.setSelectedCity(this@CityPickerActivity, city)
                     Toast.makeText(this@CityPickerActivity, "Город добавлен: $city", Toast.LENGTH_SHORT).show()
                     setResult(RESULT_OK)

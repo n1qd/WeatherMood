@@ -8,6 +8,7 @@ object Prefs {
     private const val KEY_CITY = "selected_city"
     private const val KEY_USE_FAHRENHEIT = "use_fahrenheit"
     private const val KEY_USE_MPH = "use_mph"
+    private const val KEY_USE_CURRENT_LOCATION = "use_current_location"
 
     fun getSelectedCity(context: Context, defaultCity: String = "Москва"): String {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -47,6 +48,22 @@ object Prefs {
     fun setUseMph(context: Context, useMph: Boolean) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit().putBoolean(KEY_USE_MPH, useMph).apply()
+    }
+    
+    fun getUseCurrentLocation(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val userManager = UserManager(context)
+        val userId = userManager.getCurrentUser()?.userId ?: "anonymous"
+        val userLocationKey = "${KEY_USE_CURRENT_LOCATION}_$userId"
+        return prefs.getBoolean(userLocationKey, true) // По умолчанию true
+    }
+    
+    fun setUseCurrentLocation(context: Context, useCurrentLocation: Boolean) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val userManager = UserManager(context)
+        val userId = userManager.getCurrentUser()?.userId ?: "anonymous"
+        val userLocationKey = "${KEY_USE_CURRENT_LOCATION}_$userId"
+        prefs.edit().putBoolean(userLocationKey, useCurrentLocation).apply()
     }
 }
 
