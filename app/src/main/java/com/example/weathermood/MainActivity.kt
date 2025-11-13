@@ -815,8 +815,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 false
             )
 
+            val temp = if (useFahrenheit) celsiusToFahrenheit(forecast.temperature.toDouble()) else forecast.temperature.toDouble()
+            val unit = if (useFahrenheit) "°F" else "°C"
+
             hourView.findViewById<TextView>(R.id.tvTime).text = forecast.time
-            hourView.findViewById<TextView>(R.id.tvHourlyTemp).text = "${forecast.temperature}°C"
+            hourView.findViewById<TextView>(R.id.tvHourlyTemp).text = "${temp.toInt()}$unit"
             hourView.findViewById<TextView>(R.id.tvWeatherIcon).text = forecast.icon
 
             layout.addView(hourView)
@@ -845,8 +848,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 false
             )
 
+            val temp = if (useFahrenheit) celsiusToFahrenheit(forecast.temperature.toDouble()) else forecast.temperature.toDouble()
+            val unit = if (useFahrenheit) "°F" else "°C"
+
             hourView.findViewById<TextView>(R.id.tvTime).text = forecast.time
-            hourView.findViewById<TextView>(R.id.tvHourlyTemp).text = "${forecast.temperature}°C"
+            hourView.findViewById<TextView>(R.id.tvHourlyTemp).text = "${temp.toInt()}$unit"
             hourView.findViewById<TextView>(R.id.tvWeatherIcon).text = forecast.icon
 
             layout.addView(hourView)
@@ -929,11 +935,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                         // Первый элемент показываем как "Сейчас", остальные - время
                         val time = if (index == 0) "Сейчас" else formatTime(forecast.dt)
-                        val temp = forecast.main.temp.toInt()
+                        val tempCelsius = forecast.main.temp
+                        val temp = if (useFahrenheit) celsiusToFahrenheit(tempCelsius) else tempCelsius
+                        val unit = if (useFahrenheit) "°F" else "°C"
                         val icon = getWeatherIcon(forecast.weather.first().icon)
 
                         hourView.findViewById<TextView>(R.id.tvTime).text = time
-                        hourView.findViewById<TextView>(R.id.tvHourlyTemp).text = "${temp}°C" // исправили кавычки
+                        hourView.findViewById<TextView>(R.id.tvHourlyTemp).text = "${temp.toInt()}$unit"
                         hourView.findViewById<TextView>(R.id.tvWeatherIcon).text = icon
 
                         layout.addView(hourView) // строчная V
@@ -1045,6 +1053,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Если настройки изменились, обновляем UI
         if (oldFahrenheit != useFahrenheit || oldMph != useMph) {
             currentWeather?.let { updateUIWithWeatherData(it) }
+            // Обновляем почасовой прогноз с новыми единицами измерения
+            setupRealHourlyForecast()
         }
         
         // Обновляем список городов при возврате на экран
@@ -1214,7 +1224,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             val adjustedTemp = weather.main.temp + tempOffset
             val temp = if (useFahrenheit) celsiusToFahrenheit(adjustedTemp) else adjustedTemp
-            dialogView.findViewById<TextView>(R.id.dialogTempCelsius).text = "${temp.toInt()}°"
+            val unit = if (useFahrenheit) "°F" else "°C"
+            dialogView.findViewById<TextView>(R.id.dialogTempCelsius).text = "${temp.toInt()}$unit"
+            
+            // Обновляем текст единицы измерения
+            val tempUnitLabel = dialogView.findViewById<TextView>(R.id.dialogTempUnitLabel)
+            if (tempUnitLabel != null) {
+                tempUnitLabel.text = if (useFahrenheit) "Фаренгейта" else "Цельсия"
+            }
             
             // Скорость ветра (с учетом настроек mph/m/s)
             if (useMph) {
