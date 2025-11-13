@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#E3F2FD"
+    android:background="@color/background"
     android:gravity="center">
 
     <TextView
@@ -14,7 +14,7 @@
         android:text="Регистрация"
         android:textSize="28sp"
         android:textStyle="bold"
-        android:textColor="#1976D2"
+        android:textColor="@color/dark_text"
         android:layout_marginBottom="32dp" />
 
     <androidx.cardview.widget.CardView
@@ -23,7 +23,7 @@
         android:layout_marginBottom="16dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
-        app:cardBackgroundColor="@android:color/white">
+        app:cardBackgroundColor="@color/card_background">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,6 +37,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
+                android:textColorHint="@color/gray_text"
+                android:textColor="@color/dark_text"
                 android:layout_marginBottom="16dp" />
 
             <EditText
@@ -45,6 +47,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Пароль (минимум 6 символов)"
                 android:inputType="textPassword"
+                android:textColorHint="@color/gray_text"
+                android:textColor="@color/dark_text"
                 android:layout_marginBottom="16dp" />
 
             <EditText
@@ -53,6 +57,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Подтвердите пароль"
                 android:inputType="textPassword"
+                android:textColorHint="@color/gray_text"
+                android:textColor="@color/dark_text"
                 android:layout_marginBottom="24dp" />
 
             <Button
