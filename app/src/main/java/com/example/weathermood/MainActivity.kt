@@ -1093,15 +1093,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 
                 // Получаем текущую погоду и город
                 val currentCity = Prefs.getSelectedCity(this@MainActivity)
+                val weather = currentWeather
+                
+                val weatherCondition = weather?.weather?.firstOrNull()?.main
+                val weatherDescription = weather?.weather?.firstOrNull()?.description
                 
                 val moodRating = MoodRatingEntity(
                     id = 0,
                     userId = userId,
                     rating = rating.toInt(),
-                    weatherCondition = null,
-                    temperature = null,
+                    weatherCondition = weatherCondition,
+                    weatherDescription = weatherDescription,
+                    temperature = weather?.main?.temp,
+                    feelsLike = weather?.main?.feelsLike,
+                    humidity = weather?.main?.humidity,
+                    pressure = weather?.main?.pressure,
+                    windSpeed = weather?.wind?.speed,
                     note = null,
-                    cityId = currentCity
+                    cityId = currentCity,
+                    cityName = weather?.cityName
                 )
                 database.moodRatingDao().insert(moodRating)
                 

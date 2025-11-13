@@ -43,6 +43,9 @@
             android:name="com.example.weathermood.ui.MoodHistoryActivity"
             android:exported="false"/>
         <activity
+            android:name="com.example.weathermood.ui.MoodAnalysisActivity"
+            android:exported="false"/>
+        <activity
             android:name="com.example.weathermood.ui.LoginActivity"
             android:exported="false"/>
         <activity

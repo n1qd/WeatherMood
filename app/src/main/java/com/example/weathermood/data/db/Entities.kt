@@ -36,11 +36,17 @@ data class MoodRatingEntity(
     val userId: String,
     val rating: Int, // 1..5
     val weatherCondition: String?,
+    val weatherDescription: String?,
     val temperature: Double?,
+    val feelsLike: Double?,
+    val humidity: Int?,
+    val pressure: Int?,
+    val windSpeed: Double?,
     val note: String? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     val cityId: String?,
+    val cityName: String?,
     val syncStatus: Int = 0
 )
 

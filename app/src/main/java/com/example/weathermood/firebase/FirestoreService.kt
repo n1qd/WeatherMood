@@ -103,9 +103,15 @@ class FirestoreService {
             val moodData = hashMapOf(
                 "rating" to mood.rating,
                 "weatherCondition" to mood.weatherCondition,
+                "weatherDescription" to mood.weatherDescription,
                 "temperature" to mood.temperature,
+                "feelsLike" to mood.feelsLike,
+                "humidity" to mood.humidity,
+                "pressure" to mood.pressure,
+                "windSpeed" to mood.windSpeed,
                 "note" to mood.note,
                 "cityId" to mood.cityId,
+                "cityName" to mood.cityName,
                 "createdAt" to mood.createdAt,
                 "updatedAt" to System.currentTimeMillis()
             )
@@ -140,9 +146,15 @@ class FirestoreService {
                         userId = userId,
                         rating = doc.getLong("rating")?.toInt() ?: return@mapNotNull null,
                         weatherCondition = doc.getString("weatherCondition"),
+                        weatherDescription = doc.getString("weatherDescription"),
                         temperature = doc.getDouble("temperature"),
+                        feelsLike = doc.getDouble("feelsLike"),
+                        humidity = doc.getLong("humidity")?.toInt(),
+                        pressure = doc.getLong("pressure")?.toInt(),
+                        windSpeed = doc.getDouble("windSpeed"),
                         note = doc.getString("note"),
                         cityId = doc.getString("cityId"),
+                        cityName = doc.getString("cityName"),
                         createdAt = doc.getLong("createdAt") ?: System.currentTimeMillis(),
                         updatedAt = doc.getLong("updatedAt") ?: System.currentTimeMillis(),
                         syncStatus = 1 // Синхронизировано

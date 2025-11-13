@@ -37,7 +37,39 @@ interface MoodRatingDao {
 
     @Query("SELECT * FROM mood_ratings WHERE userId = :userId ORDER BY createdAt DESC")
     suspend fun list(userId: String): List<MoodRatingEntity>
+    
+    @Query("DELETE FROM mood_ratings WHERE id = :id")
+    suspend fun delete(id: Int)
+    
+    // Анализ настроения по погодным условиям
+    @Query("SELECT AVG(CAST(rating AS REAL)) as avgRating, weatherCondition, COUNT(*) as count FROM mood_ratings WHERE userId = :userId AND weatherCondition IS NOT NULL GROUP BY weatherCondition")
+    suspend fun getMoodByWeatherCondition(userId: String): List<MoodByWeather>
+    
+    // Получить все записи для анализа по температуре (обработка в коде)
+    @Query("SELECT * FROM mood_ratings WHERE userId = :userId AND temperature IS NOT NULL")
+    suspend fun getMoodWithTemperature(userId: String): List<MoodRatingEntity>
+    
+    // Среднее настроение по дням недели
+    @Query("SELECT AVG(CAST(rating AS REAL)) as avgRating, CAST(strftime('%w', datetime(createdAt/1000, 'unixepoch')) AS INTEGER) as dayOfWeek, COUNT(*) as count FROM mood_ratings WHERE userId = :userId GROUP BY dayOfWeek")
+    suspend fun getMoodByDayOfWeek(userId: String): List<MoodByDay>
+    
+    // Получить все записи для графика
+    @Query("SELECT * FROM mood_ratings WHERE userId = :userId ORDER BY createdAt ASC")
+    suspend fun getAllForChart(userId: String): List<MoodRatingEntity>
 }
+
+// Классы для результатов анализа
+data class MoodByWeather(
+    val avgRating: Double,
+    val weatherCondition: String,
+    val count: Int
+)
+
+data class MoodByDay(
+    val avgRating: Double,
+    val dayOfWeek: Int,
+    val count: Int
+)
 
 @Dao
 interface WeatherCacheDao {
