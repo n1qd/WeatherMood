@@ -13,6 +13,9 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE userId = :id LIMIT 1")
     suspend fun getById(id: String): UserEntity?
+    
+    @Query("UPDATE users SET themeMode = :themeMode WHERE userId = :userId")
+    suspend fun updateThemeMode(userId: String, themeMode: Int)
 }
 
 @Dao

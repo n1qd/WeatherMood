@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#E8EDF5">
+    android:background="@color/background">
 
     <!-- Верхняя панель -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:background="#FFFFFF"
+        android:background="@color/card_background"
         android:elevation="4dp">
 
         <ImageButton
@@ -30,7 +30,7 @@
             android:text="Добавить город"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#1A1A2E" />
+            android:textColor="@color/dark_text" />
 
     </RelativeLayout>
 
@@ -41,7 +41,7 @@
         android:layout_margin="16dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="2dp"
-        app:cardBackgroundColor="#FFFFFF">
+        app:cardBackgroundColor="@color/card_background">
 
         <EditText
             android:id="@+id/etQuery"

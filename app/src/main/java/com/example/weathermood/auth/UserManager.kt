@@ -40,6 +40,10 @@ class UserManager(private val context: Context) {
             // Проверяем, существует ли пользователь в базе
             val existingUser = database.userDao().getById(user.uid)
             
+            // Получаем тему из SharedPreferences (если была установлена для анонимного пользователя)
+            val prefs = context.getSharedPreferences("weathermood_prefs", Context.MODE_PRIVATE)
+            val savedTheme = prefs.getInt("theme_mode", 0)
+            
             if (existingUser == null) {
                 // Новый пользователь - создаем запись и добавляем Москву по умолчанию
                 val userEntity = UserEntity(
@@ -49,7 +53,8 @@ class UserManager(private val context: Context) {
                     createdAt = System.currentTimeMillis(),
                     lastLogin = System.currentTimeMillis(),
                     syncEnabled = !user.isAnonymous,
-                    isAnonymous = user.isAnonymous
+                    isAnonymous = user.isAnonymous,
+                    themeMode = savedTheme // Сохраняем тему из SharedPreferences
                 )
                 database.userDao().upsert(userEntity)
                 
@@ -69,8 +74,11 @@ class UserManager(private val context: Context) {
                 database.favoriteCityDao().upsert(moscowCity)
             } else {
                 // Существующий пользователь - обновляем время последнего входа
+                // Если тема не была установлена в БД, используем из SharedPreferences
+                val themeMode = if (existingUser.themeMode == 0 && savedTheme != 0) savedTheme else existingUser.themeMode
                 val updatedUser = existingUser.copy(
-                    lastLogin = System.currentTimeMillis()
+                    lastLogin = System.currentTimeMillis(),
+                    themeMode = themeMode
                 )
                 database.userDao().upsert(updatedUser)
             }

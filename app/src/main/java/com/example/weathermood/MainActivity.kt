@@ -32,6 +32,7 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -67,6 +68,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Применяем тему перед созданием активности
+        applyTheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -123,7 +126,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 tvCurrentLocation.text = "📍 Текущее положение"
                 if (useCurrentLocation) {
                     // Выделяем активную кнопку
-                    tvCurrentLocation.setTextColor(0xFFFFD700.toInt()) // Золотой цвет
+                    tvCurrentLocation.setTextColor(getColor(R.color.accent_gold))
                     tvCurrentLocation.setTypeface(null, android.graphics.Typeface.BOLD)
                 } else {
                     tvCurrentLocation.setTextColor(getColor(android.R.color.white))
@@ -180,7 +183,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         val useCurrentLocation = Prefs.getUseCurrentLocation(this@MainActivity)
                         val selectedCity = Prefs.getSelectedCity(this@MainActivity)
                         if (!useCurrentLocation && displayName == selectedCity) {
-                            tvCityName.setTextColor(0xFFFFD700.toInt()) // Золотой цвет
+                            tvCityName.setTextColor(getColor(R.color.accent_gold))
                             tvCityName.setTypeface(null, android.graphics.Typeface.BOLD)
                         } else {
                             tvCityName.setTextColor(getColor(android.R.color.white))
@@ -210,6 +213,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             } catch (e: Exception) {
                 Log.e(TAG, "Ошибка загрузки городов: ${e.message}", e)
             }
+        }
+    }
+    
+    private fun applyTheme() {
+        val themeMode = Prefs.getThemeMode(this)
+        when (themeMode) {
+            0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Светлая
+            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES) // Тёмная
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) // Системная
         }
     }
     
@@ -1043,6 +1055,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
+        
+        // Применяем тему (на случай если изменилась в настройках)
+        applyTheme()
         
         // Перезагружаем настройки при возврате (на случай если изменились в ProfileActivity)
         val oldFahrenheit = useFahrenheit

@@ -8,21 +8,35 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.lifecycleScope
 import com.weatherapp.R
 import com.example.weathermood.data.Prefs
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ProfileActivity : AppCompatActivity() {
     
     private var useFahrenheit = false
     private var useMph = false
+    private var themeMode = 0 // 0 = светлая, 1 = тёмная
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Применяем тему перед созданием активности
+        val savedThemeMode = Prefs.getThemeMode(this)
+        when (savedThemeMode) {
+            0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
         
         // Загружаем текущие настройки
         useFahrenheit = Prefs.getUseFahrenheit(this)
         useMph = Prefs.getUseMph(this)
+        themeMode = Prefs.getThemeMode(this)
         
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
             finish()
@@ -30,6 +44,7 @@ class ProfileActivity : AppCompatActivity() {
         
         setupTemperatureToggle()
         setupWindToggle()
+        setupThemeToggle()
         setupMenuItems()
     }
     
@@ -60,16 +75,20 @@ class ProfileActivity : AppCompatActivity() {
     }
     
     private fun updateTemperatureUI(btnCelsius: TextView, btnFahrenheit: TextView) {
+        val blueColor = getColor(R.color.blue)
+        val whiteColor = getColor(R.color.white)
+        val darkTextColor = getColor(R.color.dark_text)
+        
         if (useFahrenheit) {
-            btnFahrenheit.setBackgroundColor(0xFF5B9FED.toInt())
-            btnFahrenheit.setTextColor(getColor(android.R.color.white))
+            btnFahrenheit.setBackgroundColor(blueColor)
+            btnFahrenheit.setTextColor(whiteColor)
             btnCelsius.setBackgroundColor(getColor(android.R.color.transparent))
-            btnCelsius.setTextColor(0xFF1A1A2E.toInt())
+            btnCelsius.setTextColor(darkTextColor)
         } else {
-            btnCelsius.setBackgroundColor(0xFF5B9FED.toInt())
-            btnCelsius.setTextColor(getColor(android.R.color.white))
+            btnCelsius.setBackgroundColor(blueColor)
+            btnCelsius.setTextColor(whiteColor)
             btnFahrenheit.setBackgroundColor(getColor(android.R.color.transparent))
-            btnFahrenheit.setTextColor(0xFF1A1A2E.toInt())
+            btnFahrenheit.setTextColor(darkTextColor)
         }
     }
     
@@ -100,18 +119,81 @@ class ProfileActivity : AppCompatActivity() {
     }
     
     private fun updateWindUI(btnKm: TextView, btnMiles: TextView) {
+        val blueColor = getColor(R.color.blue)
+        val whiteColor = getColor(R.color.white)
+        val darkTextColor = getColor(R.color.dark_text)
+        
         if (useMph) {
-            btnMiles.setBackgroundColor(0xFF5B9FED.toInt())
-            btnMiles.setTextColor(getColor(android.R.color.white))
+            btnMiles.setBackgroundColor(blueColor)
+            btnMiles.setTextColor(whiteColor)
             btnKm.setBackgroundColor(getColor(android.R.color.transparent))
-            btnKm.setTextColor(0xFF1A1A2E.toInt())
+            btnKm.setTextColor(darkTextColor)
         } else {
-            btnKm.setBackgroundColor(0xFF5B9FED.toInt())
-            btnKm.setTextColor(getColor(android.R.color.white))
+            btnKm.setBackgroundColor(blueColor)
+            btnKm.setTextColor(whiteColor)
             btnMiles.setBackgroundColor(getColor(android.R.color.transparent))
-            btnMiles.setTextColor(0xFF1A1A2E.toInt())
+            btnMiles.setTextColor(darkTextColor)
         }
     }
+    
+    private fun setupThemeToggle() {
+        val btnLightTheme = findViewById<TextView>(R.id.btnLightTheme)
+        val btnDarkTheme = findViewById<TextView>(R.id.btnDarkTheme)
+        
+        // Устанавливаем начальное состояние
+        updateThemeUI(btnLightTheme, btnDarkTheme)
+        
+        btnLightTheme.setOnClickListener {
+            if (themeMode != 0) {
+                // Сохраняем и применяем тему асинхронно
+                lifecycleScope.launch(Dispatchers.Main) {
+                    themeMode = 0
+                    Prefs.setThemeModeAsync(this@ProfileActivity, 0)
+                    // Применяем тему глобально
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    // Перезапускаем активность для применения темы
+                    finish()
+                    startActivity(intent)
+                }
+            }
+        }
+        
+        btnDarkTheme.setOnClickListener {
+            if (themeMode != 1) {
+                // Сохраняем и применяем тему асинхронно
+                lifecycleScope.launch(Dispatchers.Main) {
+                    themeMode = 1
+                    Prefs.setThemeModeAsync(this@ProfileActivity, 1)
+                    // Применяем тему глобально
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    // Перезапускаем активность для применения темы
+                    finish()
+                    startActivity(intent)
+                }
+            }
+        }
+    }
+    
+    private fun updateThemeUI(btnLightTheme: TextView, btnDarkTheme: TextView) {
+        val blueColor = getColor(R.color.blue)
+        val whiteColor = getColor(R.color.white)
+        val darkTextColor = getColor(R.color.dark_text)
+        
+        if (themeMode == 1) {
+            // Тёмная тема активна
+            btnDarkTheme.setBackgroundColor(blueColor)
+            btnDarkTheme.setTextColor(whiteColor)
+            btnLightTheme.setBackgroundColor(getColor(android.R.color.transparent))
+            btnLightTheme.setTextColor(darkTextColor)
+        } else {
+            // Светлая тема активна
+            btnLightTheme.setBackgroundColor(blueColor)
+            btnLightTheme.setTextColor(whiteColor)
+            btnDarkTheme.setBackgroundColor(getColor(android.R.color.transparent))
+            btnDarkTheme.setTextColor(darkTextColor)
+        }
+    }
+    
     
     private fun setupMenuItems() {
         // О приложении

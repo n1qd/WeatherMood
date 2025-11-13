@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FFFFFFFF</color>
+    <color name="white">#1E1E1E</color>
+    <color name="blue">#6BA8F0</color>
+    <color name="dark_text">#E0E0E0</color>
+    <color name="gray_text">#9E9E9E</color>
+    <color name="background">#121212</color>
+    <color name="card_background">#1E1E1E</color>
+    <color name="surface">#1E1E1E</color>
+    <color name="accent_gold">#FFD700</color>
+    <color name="dialog_header_background">#6BA8F0</color>
+    <color name="detail_card_background">#2D2D2D</color>
+</resources>
+

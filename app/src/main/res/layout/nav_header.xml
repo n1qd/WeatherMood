@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#5B9FED">
+    android:background="@color/dialog_header_background">
 
     <!-- Профиль пользователя -->
     <LinearLayout
@@ -64,7 +64,7 @@
         android:layout_marginBottom="16dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="4dp"
-        app:cardBackgroundColor="#FFFFFF">
+        app:cardBackgroundColor="@color/card_background">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -87,7 +87,7 @@
                 android:layout_weight="1"
                 android:text="Войти / Регистрация"
                 android:textSize="15sp"
-                android:textColor="#5B9FED"
+                android:textColor="@color/blue"
                 android:textStyle="bold" />
 
             <TextView
@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:text="→"
                 android:textSize="20sp"
-                android:textColor="#5B9FED" />
+                android:textColor="@color/blue" />
 
         </LinearLayout>
 

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#E8EDF5"
+    android:background="@color/background"
     android:gravity="center">
 
     <!-- Логотип и заголовок -->
@@ -29,14 +29,14 @@
             android:text="WeatherMood"
             android:textSize="32sp"
             android:textStyle="bold"
-            android:textColor="#1A1A2E" />
+            android:textColor="@color/dark_text" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Не переживайте, вся погода тут"
             android:textSize="14sp"
-            android:textColor="#666666"
+            android:textColor="@color/gray_text"
             android:layout_marginTop="4dp" />
 
     </LinearLayout>
@@ -87,8 +87,8 @@
                 android:text="Войти"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:background="#5B9FED"
+                android:textColor="@color/white"
+                android:background="@color/blue"
                 android:layout_marginBottom="12dp" />
 
             <!-- Кнопка регистрации -->
@@ -98,7 +98,7 @@
                 android:layout_height="56dp"
                 android:text="Регистрация"
                 android:textSize="16sp"
-                android:textColor="#5B9FED"
+                android:textColor="@color/blue"
                 android:background="@android:drawable/editbox_background"
                 android:layout_marginBottom="12dp"
                 style="?android:attr/buttonBarButtonStyle" />

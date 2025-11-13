@@ -18,14 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:background="#E8EDF5">
+            android:background="@color/background">
 
             <!-- Верхняя панель с городом и настройками -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:background="#E8EDF5">
+            android:background="@color/background">
 
             <ImageButton
                 android:id="@+id/btnMenu"
@@ -43,7 +43,7 @@
                 android:layout_centerInParent="true"
                 android:text="Москва, Россия"
                 android:textSize="18sp"
-                android:textColor="#1A1A2E"
+                android:textColor="@color/dark_text"
                 android:textStyle="bold" />
 
             <ImageButton
@@ -82,7 +82,7 @@
                     android:foreground="?android:attr/selectableItemBackground"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="4dp"
-                    app:cardBackgroundColor="#5B9FED">
+                    app:cardBackgroundColor="@color/dialog_header_background">
 
                     <RelativeLayout
                         android:id="@+id/weatherCardBackground"
@@ -203,7 +203,7 @@
                     android:text="Прогноз"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#1A1A2E"
+                    android:textColor="@color/dark_text"
                     android:layout_marginBottom="12dp" />
 
                 <!-- Почасовой прогноз -->
@@ -228,7 +228,7 @@
                     android:text="Настроение"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#1A1A2E"
+                    android:textColor="@color/dark_text"
                     android:layout_marginBottom="12dp" />
 
                 <androidx.cardview.widget.CardView
@@ -237,7 +237,7 @@
                     android:layout_marginBottom="16dp"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="@color/card_background">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -250,7 +250,7 @@
                             android:layout_height="wrap_content"
                             android:text="Как ваше настроение сегодня?"
                             android:textSize="15sp"
-                            android:textColor="#1A1A2E"
+                            android:textColor="@color/dark_text"
                             android:lineSpacingExtra="2dp"
                             android:layout_marginBottom="16dp" />
 
@@ -278,7 +278,7 @@
                     android:text="👕 Что надеть"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#1A1A2E"
+                    android:textColor="@color/dark_text"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="12dp" />
 
@@ -288,7 +288,7 @@
                     android:layout_marginBottom="16dp"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="@color/card_background">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -312,7 +312,7 @@
                             android:layout_weight="1"
                             android:text="Рекомендуется легкая куртка и шарф"
                             android:textSize="15sp"
-                            android:textColor="#1A1A2E"
+                            android:textColor="@color/dark_text"
                             android:lineSpacingExtra="2dp" />
 
                     </LinearLayout>
@@ -326,7 +326,7 @@
                     android:text="🌱 Эко-совет дня"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#1A1A2E"
+                    android:textColor="@color/dark_text"
                     android:layout_marginBottom="12dp" />
 
                 <androidx.cardview.widget.CardView
@@ -380,7 +380,7 @@
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#5B9FED"
+        android:background="@color/dialog_header_background"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu" />
 

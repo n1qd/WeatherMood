@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#E8EDF5">
+    android:background="@color/background">
 
     <!-- Верхняя панель -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:background="#E8EDF5">
+        android:background="@color/background">
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -29,7 +29,7 @@
             android:text="Настройки"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#1A1A2E" />
+            android:textColor="@color/dark_text" />
 
     </RelativeLayout>
 
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:text="Единицы измерения"
                 android:textSize="14sp"
-                android:textColor="#666666"
+                android:textColor="@color/gray_text"
                 android:layout_marginBottom="12dp" />
 
             <!-- Температура -->
@@ -59,7 +59,7 @@
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -74,7 +74,7 @@
                         android:layout_weight="1"
                         android:text="Температура"
                         android:textSize="16sp"
-                        android:textColor="#1A1A2E" />
+                        android:textColor="@color/dark_text" />
 
                     <!-- Переключатель C/F -->
                     <LinearLayout
@@ -90,9 +90,9 @@
                             android:layout_height="match_parent"
                             android:text="C"
                             android:textSize="16sp"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:gravity="center"
-                            android:background="#5B9FED"
+                            android:background="@color/blue"
                             android:clickable="true"
                             android:focusable="true" />
 
@@ -102,7 +102,7 @@
                             android:layout_height="match_parent"
                             android:text="F"
                             android:textSize="16sp"
-                            android:textColor="#1A1A2E"
+                            android:textColor="@color/dark_text"
                             android:gravity="center"
                             android:clickable="true"
                             android:focusable="true" />
@@ -120,7 +120,7 @@
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -135,7 +135,7 @@
                         android:layout_weight="1"
                         android:text="Ветер"
                         android:textSize="16sp"
-                        android:textColor="#1A1A2E" />
+                        android:textColor="@color/dark_text" />
 
                     <!-- Переключатель Км/Мили -->
                     <LinearLayout
@@ -151,9 +151,9 @@
                             android:layout_height="match_parent"
                             android:text="Км"
                             android:textSize="16sp"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:gravity="center"
-                            android:background="#5B9FED"
+                            android:background="@color/blue"
                             android:clickable="true"
                             android:focusable="true" />
 
@@ -163,7 +163,68 @@
                             android:layout_height="match_parent"
                             android:text="Мили"
                             android:textSize="16sp"
-                            android:textColor="#1A1A2E"
+                            android:textColor="@color/dark_text"
+                            android:gravity="center"
+                            android:clickable="true"
+                            android:focusable="true" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Тема -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/card_background">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Тема"
+                        android:textSize="16sp"
+                        android:textColor="@color/dark_text" />
+
+                    <!-- Переключатель Светлая/Тёмная -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:orientation="horizontal"
+                        android:background="@android:drawable/editbox_background"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/btnLightTheme"
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:text="Светлая"
+                            android:textSize="16sp"
+                            android:textColor="@color/white"
+                            android:gravity="center"
+                            android:background="@color/blue"
+                            android:clickable="true"
+                            android:focusable="true" />
+
+                        <TextView
+                            android:id="@+id/btnDarkTheme"
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:text="Тёмная"
+                            android:textSize="16sp"
+                            android:textColor="@color/dark_text"
                             android:gravity="center"
                             android:clickable="true"
                             android:focusable="true" />
@@ -180,7 +241,7 @@
                 android:layout_height="wrap_content"
                 android:text="Приложение"
                 android:textSize="14sp"
-                android:textColor="#666666"
+                android:textColor="@color/gray_text"
                 android:layout_marginBottom="12dp" />
 
             <!-- О приложении -->
@@ -190,7 +251,7 @@
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:id="@+id/btnAbout"
@@ -216,7 +277,7 @@
                         android:layout_weight="1"
                         android:text="О приложении"
                         android:textSize="16sp"
-                        android:textColor="#1A1A2E" />
+                        android:textColor="@color/dark_text" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -236,7 +297,7 @@
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:id="@+id/btnShare"
@@ -262,7 +323,7 @@
                         android:layout_weight="1"
                         android:text="Поделиться"
                         android:textSize="16sp"
-                        android:textColor="#1A1A2E" />
+                        android:textColor="@color/dark_text" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -282,7 +343,7 @@
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:id="@+id/btnJoinUs"
@@ -308,7 +369,7 @@
                         android:layout_weight="1"
                         android:text="Присоединиться к нам"
                         android:textSize="16sp"
-                        android:textColor="#1A1A2E" />
+                        android:textColor="@color/dark_text" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -328,7 +389,7 @@
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:id="@+id/btnFeedback"
@@ -347,7 +408,7 @@
                         android:layout_weight="1"
                         android:text="Оставить отзыв"
                         android:textSize="16sp"
-                        android:textColor="#1A1A2E" />
+                        android:textColor="@color/dark_text" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -366,7 +427,7 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:id="@+id/btnContact"
@@ -385,7 +446,7 @@
                         android:layout_weight="1"
                         android:text="Обратная связь"
                         android:textSize="16sp"
-                        android:textColor="#1A1A2E" />
+                        android:textColor="@color/dark_text" />
 
                     <TextView
                         android:layout_width="wrap_content"

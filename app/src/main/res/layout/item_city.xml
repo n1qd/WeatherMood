@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="#FFFFFF">
+    app:cardBackgroundColor="@color/card_background">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             android:layout_centerVertical="true"
             android:text="Москва"
             android:textSize="16sp"
-            android:textColor="#1A1A2E"
+            android:textColor="@color/dark_text"
             android:textStyle="bold" />
 
         <TextView

@@ -11,7 +11,8 @@ data class UserEntity(
     val createdAt: Long = System.currentTimeMillis(),
     val lastLogin: Long = System.currentTimeMillis(),
     val syncEnabled: Boolean = false,
-    val isAnonymous: Boolean = true
+    val isAnonymous: Boolean = true,
+    val themeMode: Int = 0 // 0 = светлая, 1 = тёмная, 2 = системная
 )
 
 @Entity(tableName = "favorite_cities")

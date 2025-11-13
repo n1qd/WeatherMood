@@ -13,7 +13,7 @@ import androidx.room.RoomDatabase
         WeatherCacheEntity::class,
         SyncQueueEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class WeatherMoodDatabase : RoomDatabase() {

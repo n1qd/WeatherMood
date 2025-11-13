@@ -8,6 +8,7 @@
 
 
     <application
+        android:name="com.example.weathermood.WeatherMoodApplication"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
