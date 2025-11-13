@@ -131,7 +131,7 @@ class ProfileActivity : AppCompatActivity() {
         
         // Присоединиться к нам
         findViewById<LinearLayout>(R.id.btnJoinUs).setOnClickListener {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com"))
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/n1qd/WeatherMood"))
             startActivity(browserIntent)
         }
         
@@ -143,7 +143,7 @@ class ProfileActivity : AppCompatActivity() {
         // Обратная связь
         findViewById<LinearLayout>(R.id.btnContact).setOnClickListener {
             val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:support@weathermood.app")
+                data = Uri.parse("mailto:n1qd1337@gmail.com")
                 putExtra(Intent.EXTRA_SUBJECT, "Обратная связь WeatherMood")
             }
             try {
