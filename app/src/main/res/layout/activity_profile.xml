@@ -137,7 +137,7 @@
                         android:textSize="16sp"
                         android:textColor="@color/dark_text" />
 
-                    <!-- Переключатель Км/Мили -->
+                    <!-- Переключатель м/с / миль/ч -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
@@ -147,10 +147,10 @@
 
                         <TextView
                             android:id="@+id/btnKm"
-                            android:layout_width="80dp"
+                            android:layout_width="70dp"
                             android:layout_height="match_parent"
-                            android:text="Км"
-                            android:textSize="16sp"
+                            android:text="м/с"
+                            android:textSize="15sp"
                             android:textColor="@color/button_text_active"
                             android:gravity="center"
                             android:background="@color/blue"
@@ -161,8 +161,8 @@
                             android:id="@+id/btnMiles"
                             android:layout_width="80dp"
                             android:layout_height="match_parent"
-                            android:text="Мили"
-                            android:textSize="16sp"
+                            android:text="миль/ч"
+                            android:textSize="15sp"
                             android:textColor="@color/button_text_inactive"
                             android:gravity="center"
                             android:clickable="true"

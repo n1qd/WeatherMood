@@ -1450,10 +1450,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // Скорость ветра (с учетом настроек mph/m/s)
             if (useMph) {
                 val mph = weather.wind.speed * 2.23694
-                dialogView.findViewById<TextView>(R.id.dialogWindSpeed).text = "${mph.toInt()} миль/ч"
+                dialogView.findViewById<TextView>(R.id.dialogWindSpeed).text = "${String.format("%.1f", mph)} миль/ч"
             } else {
-                val kmh = weather.wind.speed * 3.6
-                dialogView.findViewById<TextView>(R.id.dialogWindSpeed).text = "${kmh.toInt()} км/ч"
+                dialogView.findViewById<TextView>(R.id.dialogWindSpeed).text = "${String.format("%.1f", weather.wind.speed)} м/с"
             }
             
             // УФ индекс (заглушка)

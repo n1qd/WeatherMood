@@ -104,7 +104,7 @@ class ProfileActivity : AppCompatActivity() {
                 useMph = false
                 Prefs.setUseMph(this, false)
                 updateWindUI(btnKm, btnMiles)
-                Toast.makeText(this, "Скорость ветра: м/с", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Единицы скорости ветра: м/с", Toast.LENGTH_SHORT).show()
             }
         }
         
@@ -113,7 +113,7 @@ class ProfileActivity : AppCompatActivity() {
                 useMph = true
                 Prefs.setUseMph(this, true)
                 updateWindUI(btnKm, btnMiles)
-                Toast.makeText(this, "Скорость ветра: миль/ч", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Единицы скорости ветра: миль/ч", Toast.LENGTH_SHORT).show()
             }
         }
     }
