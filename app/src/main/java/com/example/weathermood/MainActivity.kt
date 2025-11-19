@@ -753,11 +753,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun generateAdvice(weather: WeatherResponse) {
         try {
-            val temp = weather.main.temp.toInt()
+            // Используем ощущаемую температуру (feelsLike) для всех советов
+            val temp = weather.main.feelsLike.toInt()
             val condition = weather.weather.firstOrNull()?.main?.lowercase() ?: ""
             val windSpeed = weather.wind.speed
             
-            // Советы по одежде на основе температуры и условий
+            // Советы по одежде на основе ощущаемой температуры и условий
         val clothingAdvice = when {
                 temp < -10 -> "Очень холодно! Наденьте теплую зимнюю куртку, шапку, шарф и перчатки ❄️"
                 temp < 0 -> "Холодно! Рекомендуется зимняя куртка и теплые аксессуары 🧥"
@@ -776,7 +777,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             
             findViewById<TextView>(R.id.tvClothingAdvice).text = clothingAdvice + additionalClothing
             
-            // Эко-советы на основе погоды
+            // Эко-советы на основе ощущаемой температуры и погоды
         val ecoAdvice = when {
                 condition.contains("clear") && temp in 15..25 -> 
                     "Отличная погода для велопрогулки! Оставьте машину дома 🚴"
