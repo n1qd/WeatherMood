@@ -11,5 +11,7 @@
     <color name="accent_gold">#FFD700</color>
     <color name="dialog_header_background">#6BA8F0</color>
     <color name="detail_card_background">#2D2D2D</color>
+    <color name="button_text_active">#FFFFFF</color>
+    <color name="button_text_inactive">#E0E0E0</color>
 </resources>
 

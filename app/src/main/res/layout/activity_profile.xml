@@ -81,7 +81,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
                         android:orientation="horizontal"
-                        android:background="@android:drawable/editbox_background"
+                        android:background="@color/card_background"
                         android:gravity="center">
 
                         <TextView
@@ -90,7 +90,7 @@
                             android:layout_height="match_parent"
                             android:text="C"
                             android:textSize="16sp"
-                            android:textColor="@color/white"
+                            android:textColor="@color/button_text_active"
                             android:gravity="center"
                             android:background="@color/blue"
                             android:clickable="true"
@@ -102,7 +102,7 @@
                             android:layout_height="match_parent"
                             android:text="F"
                             android:textSize="16sp"
-                            android:textColor="@color/dark_text"
+                            android:textColor="@color/button_text_inactive"
                             android:gravity="center"
                             android:clickable="true"
                             android:focusable="true" />
@@ -142,7 +142,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
                         android:orientation="horizontal"
-                        android:background="@android:drawable/editbox_background"
+                        android:background="@color/card_background"
                         android:gravity="center">
 
                         <TextView
@@ -151,7 +151,7 @@
                             android:layout_height="match_parent"
                             android:text="Км"
                             android:textSize="16sp"
-                            android:textColor="@color/white"
+                            android:textColor="@color/button_text_active"
                             android:gravity="center"
                             android:background="@color/blue"
                             android:clickable="true"
@@ -163,7 +163,7 @@
                             android:layout_height="match_parent"
                             android:text="Мили"
                             android:textSize="16sp"
-                            android:textColor="@color/dark_text"
+                            android:textColor="@color/button_text_inactive"
                             android:gravity="center"
                             android:clickable="true"
                             android:focusable="true" />
@@ -203,7 +203,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
                         android:orientation="horizontal"
-                        android:background="@android:drawable/editbox_background"
+                        android:background="@color/card_background"
                         android:gravity="center">
 
                         <TextView
@@ -212,7 +212,7 @@
                             android:layout_height="match_parent"
                             android:text="Светлая"
                             android:textSize="16sp"
-                            android:textColor="@color/white"
+                            android:textColor="@color/button_text_active"
                             android:gravity="center"
                             android:background="@color/blue"
                             android:clickable="true"
@@ -224,7 +224,7 @@
                             android:layout_height="match_parent"
                             android:text="Тёмная"
                             android:textSize="16sp"
-                            android:textColor="@color/dark_text"
+                            android:textColor="@color/button_text_inactive"
                             android:gravity="center"
                             android:clickable="true"
                             android:focusable="true" />

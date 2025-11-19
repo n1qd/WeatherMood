@@ -76,19 +76,19 @@ class ProfileActivity : AppCompatActivity() {
     
     private fun updateTemperatureUI(btnCelsius: TextView, btnFahrenheit: TextView) {
         val blueColor = getColor(R.color.blue)
-        val whiteColor = getColor(R.color.white)
-        val darkTextColor = getColor(R.color.dark_text)
+        val activeTextColor = getColor(R.color.button_text_active)
+        val inactiveTextColor = getColor(R.color.button_text_inactive)
         
         if (useFahrenheit) {
             btnFahrenheit.setBackgroundColor(blueColor)
-            btnFahrenheit.setTextColor(whiteColor)
+            btnFahrenheit.setTextColor(activeTextColor)
             btnCelsius.setBackgroundColor(getColor(android.R.color.transparent))
-            btnCelsius.setTextColor(darkTextColor)
+            btnCelsius.setTextColor(inactiveTextColor)
         } else {
             btnCelsius.setBackgroundColor(blueColor)
-            btnCelsius.setTextColor(whiteColor)
+            btnCelsius.setTextColor(activeTextColor)
             btnFahrenheit.setBackgroundColor(getColor(android.R.color.transparent))
-            btnFahrenheit.setTextColor(darkTextColor)
+            btnFahrenheit.setTextColor(inactiveTextColor)
         }
     }
     
@@ -120,19 +120,19 @@ class ProfileActivity : AppCompatActivity() {
     
     private fun updateWindUI(btnKm: TextView, btnMiles: TextView) {
         val blueColor = getColor(R.color.blue)
-        val whiteColor = getColor(R.color.white)
-        val darkTextColor = getColor(R.color.dark_text)
+        val activeTextColor = getColor(R.color.button_text_active)
+        val inactiveTextColor = getColor(R.color.button_text_inactive)
         
         if (useMph) {
             btnMiles.setBackgroundColor(blueColor)
-            btnMiles.setTextColor(whiteColor)
+            btnMiles.setTextColor(activeTextColor)
             btnKm.setBackgroundColor(getColor(android.R.color.transparent))
-            btnKm.setTextColor(darkTextColor)
+            btnKm.setTextColor(inactiveTextColor)
         } else {
             btnKm.setBackgroundColor(blueColor)
-            btnKm.setTextColor(whiteColor)
+            btnKm.setTextColor(activeTextColor)
             btnMiles.setBackgroundColor(getColor(android.R.color.transparent))
-            btnMiles.setTextColor(darkTextColor)
+            btnMiles.setTextColor(inactiveTextColor)
         }
     }
     
@@ -176,21 +176,21 @@ class ProfileActivity : AppCompatActivity() {
     
     private fun updateThemeUI(btnLightTheme: TextView, btnDarkTheme: TextView) {
         val blueColor = getColor(R.color.blue)
-        val whiteColor = getColor(R.color.white)
-        val darkTextColor = getColor(R.color.dark_text)
+        val activeTextColor = getColor(R.color.button_text_active)
+        val inactiveTextColor = getColor(R.color.button_text_inactive)
         
         if (themeMode == 1) {
             // Тёмная тема активна
             btnDarkTheme.setBackgroundColor(blueColor)
-            btnDarkTheme.setTextColor(whiteColor)
+            btnDarkTheme.setTextColor(activeTextColor)
             btnLightTheme.setBackgroundColor(getColor(android.R.color.transparent))
-            btnLightTheme.setTextColor(darkTextColor)
+            btnLightTheme.setTextColor(inactiveTextColor)
         } else {
             // Светлая тема активна
             btnLightTheme.setBackgroundColor(blueColor)
-            btnLightTheme.setTextColor(whiteColor)
+            btnLightTheme.setTextColor(activeTextColor)
             btnDarkTheme.setBackgroundColor(getColor(android.R.color.transparent))
-            btnDarkTheme.setTextColor(darkTextColor)
+            btnDarkTheme.setTextColor(inactiveTextColor)
         }
     }
     
