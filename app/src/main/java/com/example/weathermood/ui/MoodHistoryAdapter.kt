@@ -1,11 +1,13 @@
 package com.example.weathermood.ui
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.weathermood.data.db.MoodRatingEntity
 import com.weatherapp.R
@@ -32,40 +34,68 @@ class MoodHistoryAdapter(
         val mood = getItem(position)
         
         val dateText = view.findViewById<TextView>(R.id.tvDate)
-        val ratingText = view.findViewById<TextView>(R.id.tvRating)
         val weatherText = view.findViewById<TextView>(R.id.tvWeather)
+        val temperatureText = view.findViewById<TextView>(R.id.tvTemperature)
+        val starsContainer = view.findViewById<LinearLayout>(R.id.starsContainer)
         val btnDelete = view.findViewById<ImageButton>(R.id.btnDelete)
         
+        // Очищаем контейнер звёзд
+        starsContainer.removeAllViews()
+        
+        // Форматируем дату
         val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
         dateText.text = dateFormat.format(Date(mood.createdAt))
         
+        // Создаём звёзды графически
         val rating = mood.rating.toInt()
-        val ratingEmoji = when (rating) {
-            1 -> "😞"
-            2 -> "😐"
-            3 -> "😊"
-            4 -> "😄"
-            5 -> "🤩"
-            else -> "😐"
+        val starSize = 28f // размер в sp
+        val starMargin = 6 // отступ между звёздами в dp
+        val starMarginPx = (starMargin * context.resources.displayMetrics.density).toInt()
+        
+        for (i in 1..5) {
+            val starView = TextView(context)
+            val isFilled = i <= rating
+            starView.text = if (isFilled) "★" else "☆"
+            starView.textSize = starSize
+            starView.setTextColor(
+                if (isFilled) {
+                    Color.parseColor("#FFD700") // Золотой цвет для заполненных звёзд
+                } else {
+                    Color.parseColor("#CCCCCC") // Светло-серый для пустых звёзд
+                }
+            )
+            
+            // Добавляем тень для заполненных звёзд
+            if (isFilled) {
+                starView.setShadowLayer(4f, 2f, 2f, Color.parseColor("#40FFD700"))
+            }
+            
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            if (i < 5) {
+                params.marginEnd = starMarginPx
+            }
+            starView.layoutParams = params
+            
+            starsContainer.addView(starView)
         }
         
-        ratingText.text = "$ratingEmoji Оценка: $rating/5"
-        
-        // Показываем информацию о погоде, если есть
-        val weatherInfo = buildString {
-            mood.weatherCondition?.let {
-                append(getWeatherConditionName(it))
-            }
-            mood.temperature?.let {
-                append(" ${it.toInt()}°C")
-            }
-        }
-        
-        if (weatherInfo.isNotEmpty()) {
-            weatherText.text = weatherInfo
+        // Показываем информацию о погоде
+        mood.weatherCondition?.let {
+            weatherText.text = getWeatherConditionName(it)
             weatherText.visibility = View.VISIBLE
-        } else {
+        } ?: run {
             weatherText.visibility = View.GONE
+        }
+        
+        // Показываем температуру отдельно
+        mood.temperature?.let {
+            temperatureText.text = "${it.toInt()}°C"
+            temperatureText.visibility = View.VISIBLE
+        } ?: run {
+            temperatureText.visibility = View.GONE
         }
         
         // Обработчик удаления

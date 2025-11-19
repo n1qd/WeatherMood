@@ -27,10 +27,18 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
+enum class ChartViewMode {
+    DAYS, MONTHS
+}
+
 class MoodAnalysisActivity : AppCompatActivity() {
     
     private lateinit var database: WeatherMoodDatabase
     private lateinit var userManager: UserManager
+    private var viewMode: ChartViewMode = ChartViewMode.DAYS
+    private var allRatings: List<MoodRatingEntity> = emptyList()
+    private var currentDayCalendar: Calendar = Calendar.getInstance()
+    private var currentMonthCalendar: Calendar = Calendar.getInstance()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         // Применяем тему перед созданием активности
@@ -72,9 +80,13 @@ class MoodAnalysisActivity : AppCompatActivity() {
                     database.moodRatingDao().getMoodByDayOfWeek(userId)
                 }
                 
-                val allRatings = withContext(Dispatchers.IO) {
+                allRatings = withContext(Dispatchers.IO) {
                     database.moodRatingDao().getAllForChart(userId)
                 }
+                
+                // Настраиваем кнопки переключения и навигацию
+                setupViewModeButtons()
+                setupNavigationButtons()
                 
                 // Отображаем график
                 displayChart(allRatings)
@@ -97,9 +109,242 @@ class MoodAnalysisActivity : AppCompatActivity() {
         }
     }
     
+    private fun setupViewModeButtons() {
+        val btnDays = findViewById<TextView>(R.id.btnViewByDays)
+        val btnMonths = findViewById<TextView>(R.id.btnViewByMonths)
+        
+        updateViewModeButtons()
+        
+        btnDays.setOnClickListener {
+            if (viewMode != ChartViewMode.DAYS) {
+                viewMode = ChartViewMode.DAYS
+                currentDayCalendar = Calendar.getInstance() // Сбрасываем на сегодня
+                updateViewModeButtons()
+                updatePeriodLabel()
+                displayChart(allRatings)
+            }
+        }
+        
+        btnMonths.setOnClickListener {
+            if (viewMode != ChartViewMode.MONTHS) {
+                viewMode = ChartViewMode.MONTHS
+                currentMonthCalendar = Calendar.getInstance() // Сбрасываем на текущий месяц
+                updateViewModeButtons()
+                updatePeriodLabel()
+                displayChart(allRatings)
+            }
+        }
+    }
+    
+    private fun updateViewModeButtons() {
+        val btnDays = findViewById<TextView>(R.id.btnViewByDays)
+        val btnMonths = findViewById<TextView>(R.id.btnViewByMonths)
+        val blueColor = getColor(R.color.blue)
+        val activeTextColor = getColor(R.color.button_text_active)
+        val inactiveTextColor = getColor(R.color.button_text_inactive)
+        
+        if (viewMode == ChartViewMode.DAYS) {
+            btnDays.setBackgroundColor(blueColor)
+            btnDays.setTextColor(activeTextColor)
+            btnMonths.setBackgroundColor(getColor(android.R.color.transparent))
+            btnMonths.setTextColor(inactiveTextColor)
+        } else {
+            btnMonths.setBackgroundColor(blueColor)
+            btnMonths.setTextColor(activeTextColor)
+            btnDays.setBackgroundColor(getColor(android.R.color.transparent))
+            btnDays.setTextColor(inactiveTextColor)
+        }
+    }
+    
+    private fun setupNavigationButtons() {
+        val btnPrev = findViewById<ImageButton>(R.id.btnPrevPeriod)
+        val btnNext = findViewById<ImageButton>(R.id.btnNextPeriod)
+        val tvPeriod = findViewById<TextView>(R.id.tvCurrentPeriod)
+        
+        updatePeriodLabel()
+        
+        btnPrev.setOnClickListener {
+            when (viewMode) {
+                ChartViewMode.DAYS -> {
+                    currentDayCalendar.add(Calendar.DAY_OF_YEAR, -1)
+                }
+                ChartViewMode.MONTHS -> {
+                    currentMonthCalendar.add(Calendar.MONTH, -1)
+                }
+            }
+            updatePeriodLabel()
+            displayChart(allRatings)
+        }
+        
+        btnNext.setOnClickListener {
+            when (viewMode) {
+                ChartViewMode.DAYS -> {
+                    currentDayCalendar.add(Calendar.DAY_OF_YEAR, 1)
+                }
+                ChartViewMode.MONTHS -> {
+                    currentMonthCalendar.add(Calendar.MONTH, 1)
+                }
+            }
+            updatePeriodLabel()
+            displayChart(allRatings)
+        }
+    }
+    
+    private fun updatePeriodLabel() {
+        val tvPeriod = findViewById<TextView>(R.id.tvCurrentPeriod)
+        val dateFormat = when (viewMode) {
+            ChartViewMode.DAYS -> SimpleDateFormat("d MMMM yyyy", Locale("ru"))
+            ChartViewMode.MONTHS -> SimpleDateFormat("MMMM yyyy", Locale("ru"))
+        }
+        
+        val calendar = when (viewMode) {
+            ChartViewMode.DAYS -> currentDayCalendar
+            ChartViewMode.MONTHS -> currentMonthCalendar
+        }
+        
+        tvPeriod.text = dateFormat.format(calendar.time)
+    }
+    
     private fun displayChart(ratings: List<MoodRatingEntity>) {
         val chartView = findViewById<MoodChartView>(R.id.moodChartView)
-        chartView.setRatings(ratings)
+        
+        val processedRatings = when (viewMode) {
+            ChartViewMode.DAYS -> getRatingsForDay(ratings, currentDayCalendar)
+            ChartViewMode.MONTHS -> getRatingsForMonth(ratings, currentMonthCalendar)
+        }
+        
+        chartView.setRatings(processedRatings, viewMode)
+    }
+    
+    private fun getRatingsForDay(ratings: List<MoodRatingEntity>, dayCalendar: Calendar): List<MoodRatingEntity> {
+        if (ratings.isEmpty()) return emptyList()
+        
+        val startOfDay = Calendar.getInstance().apply {
+            timeInMillis = dayCalendar.timeInMillis
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        
+        val endOfDay = Calendar.getInstance().apply {
+            timeInMillis = dayCalendar.timeInMillis
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }
+        
+        val dayRatings = ratings.filter { rating ->
+            val ratingTime = rating.createdAt
+            ratingTime >= startOfDay.timeInMillis && ratingTime <= endOfDay.timeInMillis
+        }
+        
+        // Группируем по часам
+        val groupedByHour = dayRatings.groupBy { rating ->
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = rating.createdAt
+            cal.get(Calendar.HOUR_OF_DAY)
+        }
+        
+        // Создаем записи для каждого часа (0-23)
+        return (0..23).mapNotNull { hour ->
+            val hourRatings = groupedByHour[hour] ?: return@mapNotNull null
+            val avgRating = hourRatings.map { it.rating }.average().toInt()
+            val firstRating = hourRatings.first()
+            
+            // Создаем время для этого часа
+            val hourTime = Calendar.getInstance().apply {
+                timeInMillis = startOfDay.timeInMillis
+                set(Calendar.HOUR_OF_DAY, hour)
+            }.timeInMillis
+            
+            MoodRatingEntity(
+                id = firstRating.id,
+                userId = firstRating.userId,
+                rating = avgRating,
+                weatherCondition = firstRating.weatherCondition,
+                weatherDescription = firstRating.weatherDescription,
+                temperature = hourRatings.mapNotNull { it.temperature }.average().takeIf { !it.isNaN() },
+                feelsLike = hourRatings.mapNotNull { it.feelsLike }.average().takeIf { !it.isNaN() },
+                humidity = hourRatings.mapNotNull { it.humidity }.average().toInt().takeIf { hourRatings.any { it.humidity != null } },
+                pressure = hourRatings.mapNotNull { it.pressure }.average().toInt().takeIf { hourRatings.any { it.pressure != null } },
+                windSpeed = hourRatings.mapNotNull { it.windSpeed }.average().takeIf { !it.isNaN() },
+                note = null,
+                createdAt = hourTime,
+                updatedAt = hourTime,
+                cityId = firstRating.cityId,
+                cityName = firstRating.cityName,
+                syncStatus = firstRating.syncStatus
+            )
+        }
+    }
+    
+    private fun getRatingsForMonth(ratings: List<MoodRatingEntity>, monthCalendar: Calendar): List<MoodRatingEntity> {
+        if (ratings.isEmpty()) return emptyList()
+        
+        val startOfMonth = Calendar.getInstance().apply {
+            timeInMillis = monthCalendar.timeInMillis
+            set(Calendar.DAY_OF_MONTH, 1)
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        
+        val endOfMonth = Calendar.getInstance().apply {
+            timeInMillis = monthCalendar.timeInMillis
+            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }
+        
+        val monthRatings = ratings.filter { rating ->
+            val ratingTime = rating.createdAt
+            ratingTime >= startOfMonth.timeInMillis && ratingTime <= endOfMonth.timeInMillis
+        }
+        
+        // Группируем по дням месяца
+        val groupedByDay = monthRatings.groupBy { rating ->
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = rating.createdAt
+            cal.get(Calendar.DAY_OF_MONTH)
+        }
+        
+        // Создаем записи для каждого дня месяца
+        val daysInMonth = startOfMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
+        return (1..daysInMonth).mapNotNull { day ->
+            val dayRatings = groupedByDay[day] ?: return@mapNotNull null
+            val avgRating = dayRatings.map { it.rating }.average().toInt()
+            val firstRating = dayRatings.first()
+            
+            // Создаем время для этого дня
+            val dayTime = Calendar.getInstance().apply {
+                timeInMillis = startOfMonth.timeInMillis
+                set(Calendar.DAY_OF_MONTH, day)
+            }.timeInMillis
+            
+            MoodRatingEntity(
+                id = firstRating.id,
+                userId = firstRating.userId,
+                rating = avgRating,
+                weatherCondition = firstRating.weatherCondition,
+                weatherDescription = firstRating.weatherDescription,
+                temperature = dayRatings.mapNotNull { it.temperature }.average().takeIf { !it.isNaN() },
+                feelsLike = dayRatings.mapNotNull { it.feelsLike }.average().takeIf { !it.isNaN() },
+                humidity = dayRatings.mapNotNull { it.humidity }.average().toInt().takeIf { dayRatings.any { it.humidity != null } },
+                pressure = dayRatings.mapNotNull { it.pressure }.average().toInt().takeIf { dayRatings.any { it.pressure != null } },
+                windSpeed = dayRatings.mapNotNull { it.windSpeed }.average().takeIf { !it.isNaN() },
+                note = null,
+                createdAt = dayTime,
+                updatedAt = dayTime,
+                cityId = firstRating.cityId,
+                cityName = firstRating.cityName,
+                syncStatus = firstRating.syncStatus
+            )
+        }
     }
     
     private fun displayWeatherAnalysis(moodByWeather: List<MoodByWeather>) {
@@ -337,6 +582,7 @@ class MoodChartView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
     private var ratings: List<MoodRatingEntity> = emptyList()
+    private var viewMode: ChartViewMode = ChartViewMode.DAYS
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val pathPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -345,12 +591,15 @@ class MoodChartView @JvmOverloads constructor(
         textPaint.textSize = 36f
         textPaint.color = Color.GRAY
         pathPaint.style = Paint.Style.STROKE
-        pathPaint.strokeWidth = 4f
+        pathPaint.strokeWidth = 5f
         pathPaint.color = Color.parseColor("#5B9FED")
+        pathPaint.strokeCap = Paint.Cap.ROUND
+        pathPaint.strokeJoin = Paint.Join.ROUND
     }
     
-    fun setRatings(ratings: List<MoodRatingEntity>) {
+    fun setRatings(ratings: List<MoodRatingEntity>, viewMode: ChartViewMode = ChartViewMode.DAYS) {
         this.ratings = ratings
+        this.viewMode = viewMode
         invalidate()
     }
     
@@ -403,7 +652,10 @@ class MoodChartView @JvmOverloads constructor(
                     path.lineTo(x, y)
                 }
                 
-                // Рисуем точку
+                // Рисуем точку с обводкой
+                paint.color = Color.WHITE
+                paint.style = Paint.Style.FILL
+                canvas.drawCircle(x, y, 8f, paint)
                 paint.color = Color.parseColor("#5B9FED")
                 paint.style = Paint.Style.FILL
                 canvas.drawCircle(x, y, 6f, paint)
@@ -412,31 +664,93 @@ class MoodChartView @JvmOverloads constructor(
             // Рисуем линию графика
             canvas.drawPath(path, pathPaint)
         } else if (ratings.size == 1) {
-            // Если только одна точка, рисуем её
+            // Если только одна точка, рисуем её красиво
             val rating = ratings[0]
             val x = startX + chartWidth / 2
             val normalizedRating = (rating.rating - 1) / 4f
             val y = endY - (normalizedRating * chartHeight)
             
+            // Рисуем точку с обводкой
+            paint.color = Color.WHITE
+            paint.style = Paint.Style.FILL
+            canvas.drawCircle(x, y, 10f, paint)
             paint.color = Color.parseColor("#5B9FED")
             paint.style = Paint.Style.FILL
             canvas.drawCircle(x, y, 8f, paint)
         }
         
-        // Подписи для X оси (даты)
+        // Подписи для X оси
         if (ratings.isNotEmpty()) {
-            textPaint.textSize = 24f
+            textPaint.textSize = 22f
+            textPaint.color = Color.GRAY
             textPaint.textAlign = Paint.Align.CENTER
-            val dateFormat = SimpleDateFormat("dd.MM", Locale.getDefault())
-            val step = maxOf(1, ratings.size / 5)
+            
             val pointSpacing = if (ratings.size > 1) chartWidth / (ratings.size - 1) else chartWidth
+            val maxLabels = 12 // Максимум подписей на оси
+            
+            val step = maxOf(1, ratings.size / maxLabels)
+            
             ratings.forEachIndexed { index, rating ->
                 if (index % step == 0 || index == ratings.size - 1) {
                     val x = startX + index * pointSpacing
-                    val date = Date(rating.createdAt)
-                    canvas.drawText(dateFormat.format(date), x, endY + 35, textPaint)
+                    val labelText = when (viewMode) {
+                        ChartViewMode.DAYS -> {
+                            // Показываем часы
+                            val calendar = Calendar.getInstance()
+                            calendar.timeInMillis = rating.createdAt
+                            "${calendar.get(Calendar.HOUR_OF_DAY)}:00"
+                        }
+                        ChartViewMode.MONTHS -> {
+                            // Показываем дни месяца
+                            val calendar = Calendar.getInstance()
+                            calendar.timeInMillis = rating.createdAt
+                            "${calendar.get(Calendar.DAY_OF_MONTH)}"
+                        }
+                    }
+                    canvas.drawText(labelText, x, endY + 30, textPaint)
                 }
             }
+        }
+        
+        // Рисуем область под графиком для красоты
+        if (ratings.size > 1) {
+            val gradientPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                shader = android.graphics.LinearGradient(
+                    0f, startY.toFloat(),
+                    0f, endY.toFloat(),
+                    intArrayOf(
+                        Color.parseColor("#5B9FED").let { Color.argb(30, Color.red(it), Color.green(it), Color.blue(it)) },
+                        Color.parseColor("#5B9FED").let { Color.argb(5, Color.red(it), Color.green(it), Color.blue(it)) }
+                    ),
+                    null,
+                    android.graphics.Shader.TileMode.CLAMP
+                )
+            }
+            
+            val fillPath = Path()
+            val pointSpacing = if (ratings.size > 1) chartWidth / (ratings.size - 1) else chartWidth
+            
+            ratings.forEachIndexed { index, rating ->
+                val x = startX + index * pointSpacing
+                val normalizedRating = (rating.rating - 1) / 4f
+                val y = endY - (normalizedRating * chartHeight)
+                
+                if (index == 0) {
+                    fillPath.moveTo(x, endY)
+                    fillPath.lineTo(x, y)
+                } else {
+                    fillPath.lineTo(x, y)
+                }
+            }
+            
+            // Замыкаем путь
+            if (ratings.isNotEmpty()) {
+                val lastX = startX + (ratings.size - 1) * (if (ratings.size > 1) chartWidth / (ratings.size - 1) else chartWidth)
+                fillPath.lineTo(lastX, endY)
+                fillPath.close()
+            }
+            
+            canvas.drawPath(fillPath, gradientPaint)
         }
     }
 }

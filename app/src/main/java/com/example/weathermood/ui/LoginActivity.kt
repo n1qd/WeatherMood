@@ -57,10 +57,15 @@ class LoginActivity : AppCompatActivity() {
                                 // Сохраняем пользователя в базу данных
                                 userManager.saveUser(user)
                                 
-                                // Загружаем данные из Firestore
+                                // Загружаем данные из Firestore (без блокировки при ошибках)
                                 if (!user.isAnonymous) {
-                                    Toast.makeText(this@LoginActivity, "Синхронизация данных...", Toast.LENGTH_SHORT).show()
-                                    userManager.loadFromFirestore()
+                                    try {
+                                        Toast.makeText(this@LoginActivity, "Синхронизация данных...", Toast.LENGTH_SHORT).show()
+                                        userManager.loadFromFirestore()
+                                    } catch (e: Exception) {
+                                        android.util.Log.e("LoginActivity", "Ошибка загрузки из Firestore: ${e.message}", e)
+                                        // Продолжаем работу даже при ошибке синхронизации
+                                    }
                                 }
                                 
                                 Toast.makeText(this@LoginActivity, "Добро пожаловать!", Toast.LENGTH_SHORT).show()

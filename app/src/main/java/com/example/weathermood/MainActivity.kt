@@ -100,9 +100,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Запускаем периодическую синхронизацию
         syncManager.schedulePeriodicSync()
         
-        // Синхронизируем данные с Firestore при запуске
+        // Синхронизируем данные с Firestore при запуске (в фоне, без блокировки)
         lifecycleScope.launch {
-            userManager.syncWithFirestore()
+            try {
+                userManager.syncWithFirestore()
+            } catch (e: Exception) {
+                Log.e(TAG, "Ошибка синхронизации при запуске: ${e.message}")
+                // Приложение продолжает работать даже при ошибке синхронизации
+            }
         }
     }
     
@@ -381,16 +386,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val ratingBar = findViewById<RatingBar>(R.id.ratingMood)
         ratingBar.setOnRatingBarChangeListener { _, rating, fromUser ->
             if (fromUser && rating > 0) {
-                saveMoodRating(rating)
-                val moodText = when (rating.toInt()) {
-                    1 -> "😢 Очень плохо"
-                    2 -> "☹️ Плохо"
-                    3 -> "😐 Нормально"
-                    4 -> "😊 Хорошо"
-                    5 -> "🤩 Отлично!"
-                    else -> "Спасибо!"
+                val currentTime = System.currentTimeMillis()
+                val lastRatingTime = Prefs.getLastMoodRatingTime(this)
+                val timeSinceLastRating = currentTime - lastRatingTime
+                val oneMinuteInMillis = 60 * 1000L
+                
+                if (timeSinceLastRating < oneMinuteInMillis) {
+                    val secondsLeft = (oneMinuteInMillis - timeSinceLastRating) / 1000
+                    Toast.makeText(
+                        this, 
+                        "Подождите ${secondsLeft} сек. перед следующей оценкой", 
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    // Сбрасываем рейтинг обратно
+                    ratingBar.rating = 0f
+                } else {
+                    saveMoodRating(rating)
+                    Prefs.setLastMoodRatingTime(this, currentTime)
+                    val moodText = when (rating.toInt()) {
+                        1 -> "😢 Очень плохо"
+                        2 -> "☹️ Плохо"
+                        3 -> "😐 Нормально"
+                        4 -> "😊 Хорошо"
+                        5 -> "🤩 Отлично!"
+                        else -> "Спасибо!"
+                    }
+                    Toast.makeText(this, "$moodText - Настроение сохранено!", Toast.LENGTH_SHORT).show()
                 }
-                Toast.makeText(this, "$moodText - Настроение сохранено!", Toast.LENGTH_SHORT).show()
             }
         }
 

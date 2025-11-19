@@ -50,11 +50,16 @@ class CityManager(private val context: Context) {
                 val isAnonymous = currentUser?.isAnonymous ?: true
                 if (!isAnonymous) {
                     try {
-                        firestore.saveFavoriteCity(userId, city)
-                        database.favoriteCityDao().upsert(city.copy(syncStatus = 1))
-                        Log.d(TAG, "Город синхронизирован с Firestore")
+                        val result = firestore.saveFavoriteCity(userId, city)
+                        if (result.isSuccess) {
+                            database.favoriteCityDao().upsert(city.copy(syncStatus = 1))
+                            Log.d(TAG, "Город синхронизирован с Firestore")
+                        } else {
+                            Log.w(TAG, "Не удалось синхронизировать город с Firestore")
+                        }
                     } catch (e: Exception) {
                         Log.e(TAG, "Ошибка синхронизации города: ${e.message}")
+                        // Продолжаем работу без синхронизации
                     }
                 }
             }
@@ -87,10 +92,15 @@ class CityManager(private val context: Context) {
             val isAnonymous = currentUser?.isAnonymous ?: true
             if (!isAnonymous && city != null) {
                 try {
-                    firestore.deleteFavoriteCity(userId, city.cityId)
-                    Log.d(TAG, "Город удален из Firestore")
+                    val result = firestore.deleteFavoriteCity(userId, city.cityId)
+                    if (result.isSuccess) {
+                        Log.d(TAG, "Город удален из Firestore")
+                    } else {
+                        Log.w(TAG, "Не удалось удалить город из Firestore")
+                    }
                 } catch (e: Exception) {
                     Log.e(TAG, "Ошибка удаления города из Firestore: ${e.message}")
+                    // Продолжаем работу, город уже удален локально
                 }
             }
         }

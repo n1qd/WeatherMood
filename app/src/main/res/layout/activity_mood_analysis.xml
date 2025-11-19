@@ -53,14 +53,91 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="График настроения"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/dark_text"
-                    android:layout_marginBottom="16dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="График настроения"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/dark_text" />
+                    
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@color/card_background"
+                        android:gravity="center">
+                        
+                        <TextView
+                            android:id="@+id/btnViewByDays"
+                            android:layout_width="80dp"
+                            android:layout_height="36dp"
+                            android:text="Дни"
+                            android:textSize="14sp"
+                            android:textColor="@color/button_text_active"
+                            android:gravity="center"
+                            android:background="@color/blue"
+                            android:clickable="true"
+                            android:focusable="true" />
+                        
+                        <TextView
+                            android:id="@+id/btnViewByMonths"
+                            android:layout_width="80dp"
+                            android:layout_height="36dp"
+                            android:text="Месяцы"
+                            android:textSize="14sp"
+                            android:textColor="@color/button_text_inactive"
+                            android:gravity="center"
+                            android:clickable="true"
+                            android:focusable="true" />
+                    </LinearLayout>
+                </LinearLayout>
+                
+                <!-- Навигация по дням/месяцам -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    
+                    <ImageButton
+                        android:id="@+id/btnPrevPeriod"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@android:drawable/ic_media_previous"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:contentDescription="Предыдущий период"
+                        android:tint="@color/blue" />
+                    
+                    <TextView
+                        android:id="@+id/tvCurrentPeriod"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Сегодня"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/dark_text"
+                        android:gravity="center" />
+                    
+                    <ImageButton
+                        android:id="@+id/btnNextPeriod"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@android:drawable/ic_media_next"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:contentDescription="Следующий период"
+                        android:tint="@color/blue" />
+                </LinearLayout>
 
                 <com.example.weathermood.ui.MoodChartView
                     android:id="@+id/moodChartView"

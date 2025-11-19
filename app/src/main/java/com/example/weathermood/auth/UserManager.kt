@@ -126,9 +126,16 @@ class UserManager(private val context: Context) {
                 val localCities = database.favoriteCityDao().list(userId)
                 localCities.forEach { city ->
                     if (city.syncStatus == 0) { // Не синхронизировано
-                        firestore.saveFavoriteCity(userId, city)
-                        // Обновляем статус синхронизации
-                        database.favoriteCityDao().upsert(city.copy(syncStatus = 1))
+                        try {
+                            val result = firestore.saveFavoriteCity(userId, city)
+                            if (result.isSuccess) {
+                                // Обновляем статус синхронизации только при успехе
+                                database.favoriteCityDao().upsert(city.copy(syncStatus = 1))
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Ошибка синхронизации города ${city.cityName}: ${e.message}")
+                            // Продолжаем работу, не обновляем статус
+                        }
                     }
                 }
                 
@@ -136,7 +143,13 @@ class UserManager(private val context: Context) {
                 val localMoods = database.moodRatingDao().list(userId)
                 localMoods.forEach { mood ->
                     if (mood.syncStatus == 0) { // Не синхронизировано
-                        firestore.saveMoodRating(userId, mood)
+                        try {
+                            firestore.saveMoodRating(userId, mood)
+                            // Можно обновить статус, но не критично
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Ошибка синхронизации настроения: ${e.message}")
+                            // Продолжаем работу
+                        }
                     }
                 }
                 
@@ -160,15 +173,23 @@ class UserManager(private val context: Context) {
                 val userId = currentUser.userId
                 
                 // Загрузка городов из Firestore
-                val cloudCities = firestore.getFavoriteCities(userId)
-                cloudCities.getOrNull()?.forEach { city ->
-                    database.favoriteCityDao().upsert(city)
+                try {
+                    val cloudCities = firestore.getFavoriteCities(userId)
+                    cloudCities.getOrNull()?.forEach { city ->
+                        database.favoriteCityDao().upsert(city)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Ошибка загрузки городов из Firestore: ${e.message}")
                 }
                 
                 // Загрузка настроений из Firestore
-                val cloudMoods = firestore.getMoodHistory(userId)
-                cloudMoods.getOrNull()?.forEach { mood ->
-                    database.moodRatingDao().insert(mood)
+                try {
+                    val cloudMoods = firestore.getMoodHistory(userId)
+                    cloudMoods.getOrNull()?.forEach { mood ->
+                        database.moodRatingDao().insert(mood)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Ошибка загрузки настроений из Firestore: ${e.message}")
                 }
                 
                 Log.d(TAG, "Загрузка из Firestore завершена")

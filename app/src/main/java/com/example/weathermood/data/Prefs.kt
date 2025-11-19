@@ -14,6 +14,7 @@ object Prefs {
     private const val KEY_USE_MPH = "use_mph"
     private const val KEY_USE_CURRENT_LOCATION = "use_current_location"
     private const val KEY_THEME_MODE = "theme_mode" // 0 = светлая, 1 = тёмная, 2 = системная
+    private const val KEY_LAST_MOOD_RATING_TIME = "last_mood_rating_time"
 
     fun getSelectedCity(context: Context, defaultCity: String = "Москва"): String {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -125,6 +126,22 @@ object Prefs {
                 }
             }
         }
+    }
+    
+    fun getLastMoodRatingTime(context: Context): Long {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val userManager = UserManager(context)
+        val userId = userManager.getCurrentUser()?.userId ?: "anonymous"
+        val userKey = "${KEY_LAST_MOOD_RATING_TIME}_$userId"
+        return prefs.getLong(userKey, 0)
+    }
+    
+    fun setLastMoodRatingTime(context: Context, time: Long) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val userManager = UserManager(context)
+        val userId = userManager.getCurrentUser()?.userId ?: "anonymous"
+        val userKey = "${KEY_LAST_MOOD_RATING_TIME}_$userId"
+        prefs.edit().putLong(userKey, time).apply()
     }
 }
 
